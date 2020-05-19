@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"strconv"
 	"syscall"
 )
 
@@ -14,7 +16,7 @@ func main() {
 	case "child":
 		child()
 	default:
-		panic("dufhdsag")
+		panic("dum dum")
 	}
 }
 
@@ -32,6 +34,9 @@ func parent() {
 }
 
 func child() {
+	must(ioutil.WriteFile("/sys/fs/cgroup/memory/nontainer/memory.limit_in_bytes", []byte("134217728"), 0700))
+	must(ioutil.WriteFile("/sys/fs/cgroup/memory/nontainer/cgroup/procs", []byte(strconv.Atoi(os.Getpid())), 0700))
+
 	must(syscall.Mount("rootfs", "rootfs", "", syscall.MS_BIND, ""))
 	must(os.MkdirAll("rootfs/oldrootfs", 0700))
 	must(syscall.PivotRoot("rootfs", "rootfs/oldrootfs"))
